@@ -27,6 +27,7 @@ def scale_image(input_image_path,
         raise RuntimeError('Width or height required!')
     original_image.thumbnail(max_size, Image.ANTIALIAS)
     original_image.save(output_image_path)
+    os.remove(input_image_path)
 
 
 def resize_images(image_path, glob_regex):
@@ -36,6 +37,13 @@ def resize_images(image_path, glob_regex):
         out = image + '.resized.png'
         scale_image(image, out, width=800)
     print('resizing done')
+
+
+def clean_up(search):
+    print(f'cleaning up files {search}')
+    for image in track(glob.glob(search)):
+        os.remove(image)
+
 
 def make_gif(image_path, glob_regex,  gif_name = None):
     print('making gif!')
@@ -47,10 +55,10 @@ def make_gif(image_path, glob_regex,  gif_name = None):
     frame_one.save(outfile, format="GIF", append_images=frames,
                save_all=True, duration=100, loop=0)
     print(f'gif created: {gif_name}')
+    clean_up(search)
 
 
 def main():
-    # TODO flag to clean up original files
     # TODO flag to scale down
     # TODO flag to specify scale down size
     # TODO add arg parser
@@ -61,7 +69,6 @@ def main():
     resize_images(fp_in, 'vlcsnap*.png')
     make_gif(fp_in, 'vlcsnap*.resized.png')
     
-
 
 if __name__ == "__main__":
     main()    
