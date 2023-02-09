@@ -5,6 +5,7 @@ from datetime import datetime
 from PIL import Image
 from rich import print
 from rich.progress import track
+from rich.console import Console
 
 
 def scale_image(input_image_path,
@@ -35,26 +36,26 @@ def resize_images(image_path, glob_regex):
     search = os.path.join(image_path, glob_regex)
     for image in track(glob.glob(search)):
         out = image + '.resized.png'
-        scale_image(image, out, width=800)
+        scale_image(image, out, width=400)
     print('resizing done')
 
 
 def clean_up(search):
-    print(f'cleaning up files {search}')
-    for image in track(glob.glob(search)):
+    for image in track(glob.glob(search), description=f'cleaning up files {search}'):
         os.remove(image)
 
 
 def make_gif(image_path, glob_regex,  gif_name = None):
-    print('making gif!')
     gif_name = gif_name or f'{datetime.now().strftime("%Y%m%d%H%M")}_gif_maker.gif'
     search = os.path.join(image_path, glob_regex)
     outfile = os.path.join(image_path, gif_name)
-    frames = [Image.open(image) for image in glob.glob(search)]
-    frame_one = frames[0]
-    frame_one.save(outfile, format="GIF", append_images=frames,
-               save_all=True, duration=100, loop=0)
-    print(f'gif created: {gif_name}')
+    console = Console()
+    with console.status("[bold green]generating the gif... ") as status:
+        frames = [Image.open(image) for image in glob.glob(search)]
+        frame_one = frames[0]
+        frame_one.save(outfile, format="GIF", append_images=frames,
+                save_all=True, duration=100, loop=0)
+        print(f'gif created: {gif_name}')
     clean_up(search)
 
 
