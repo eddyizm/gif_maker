@@ -8,25 +8,14 @@ from rich.progress import track
 from rich.console import Console
 
 
-def scale_image(input_image_path,
-                output_image_path,
-                width=None,
-                height=None
-                ):
+def scale_image(input_image_path, output_image_path, width=400):
     """
         resize images before making gif. 
     """
     original_image = Image.open(input_image_path)
     w, h = original_image.size
-    if width and height:
-        max_size = (width, height)
-    elif width:
-        max_size = (width, h)
-    elif height:
-        max_size = (w, height)
-    else:
-        raise RuntimeError('Width or height required!')
-    original_image.thumbnail(max_size, Image.ANTIALIAS)
+    max_size = (width, h)
+    original_image.thumbnail(max_size, Image.Resampling.LANCZOS)
     original_image.save(output_image_path)
     os.remove(input_image_path)
 
@@ -36,7 +25,7 @@ def resize_images(image_path, glob_regex):
     search = os.path.join(image_path, glob_regex)
     for image in track(glob.glob(search)):
         out = image + '.resized.png'
-        scale_image(image, out, width=400)
+        scale_image(image, out)
     print('resizing done')
 
 
@@ -67,9 +56,12 @@ def main():
         print('[bold red]Please enter a path to image files.[/bold red]')
         return
     fp_in = sys.argv[1]
-    resize_images(fp_in, 'vlcsnap*.png')
-    make_gif(fp_in, 'vlcsnap*.resized.png')
+    file_filter_to_resize = 'vlcsnap*.png'
+    print(f'[yellow]{file_filter_to_resize[0:-4]}[/yellow]')
+    resize_images(fp_in, file_filter_to_resize)
+    resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
+    make_gif(fp_in, resized_files)
     
 
 if __name__ == "__main__":
-    main()    
+    main()
