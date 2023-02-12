@@ -1,1 +1,1 @@
-from .local_settings import check_config
+from .settings import check_config
