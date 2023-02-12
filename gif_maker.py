@@ -7,7 +7,7 @@ from PIL import Image
 from rich import print
 from rich.progress import track
 from rich.console import Console
-
+from config import check_config
 
 
 parser = argparse.ArgumentParser(description="Resizes and creates gif out of png files in specified directory"
