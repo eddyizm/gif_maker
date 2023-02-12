@@ -1,11 +1,24 @@
+import argparse
 import glob
 import os
-import sys
 from datetime import datetime
+
 from PIL import Image
 from rich import print
 from rich.progress import track
 from rich.console import Console
+
+
+
+parser = argparse.ArgumentParser(description="Resizes and creates gif out of png files in specified directory"
+    ,epilog="And then there was gif..."
+)    
+parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_false', required=False)
+parser.add_argument('-d', '--directory', help="directory where files are located.", required=False)
+parser.add_argument('-L', '--leave', help='leave processed files, default app removes all files except gif output.', action='store_false')
+args=parser.parse_args()
+
+CLEAN = args.leave
 
 
 def scale_image(input_image_path, output_image_path, width=400):
@@ -17,7 +30,9 @@ def scale_image(input_image_path, output_image_path, width=400):
     max_size = (width, h)
     original_image.thumbnail(max_size, Image.Resampling.LANCZOS)
     original_image.save(output_image_path)
-    os.remove(input_image_path)
+    if CLEAN:
+        print('[bold yellow]removing source image[/bold yellow]')
+        os.remove(input_image_path)
 
 
 def resize_images(image_path, glob_regex):
@@ -30,8 +45,9 @@ def resize_images(image_path, glob_regex):
 
 
 def clean_up(search):
-    for image in track(glob.glob(search), description=f'cleaning up files {search}'):
-        os.remove(image)
+    if CLEAN:
+        for image in track(glob.glob(search), description=f'cleaning up files {search}'):
+            os.remove(image)
 
 
 def make_gif(image_path, glob_regex,  gif_name = None):
@@ -51,17 +67,21 @@ def make_gif(image_path, glob_regex,  gif_name = None):
 def main():
     # TODO flag to scale down
     # TODO flag to specify scale down size
-    # TODO add arg parser
-    if len(sys.argv) < 2:
+    if not args.config:
+        # check_config()
+        # TODO check if config exists and use it.
+        pass        
+    
+    if not args.directory:
         print('[bold red]Please enter a path to image files.[/bold red]')
         return
-    fp_in = sys.argv[1]
+    fp_in = args.directory
     file_filter_to_resize = 'vlcsnap*.png'
     print(f'[yellow]{file_filter_to_resize[0:-4]}[/yellow]')
     resize_images(fp_in, file_filter_to_resize)
     resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
     make_gif(fp_in, resized_files)
-    
+
 
 if __name__ == "__main__":
     main()
