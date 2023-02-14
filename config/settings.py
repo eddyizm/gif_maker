@@ -5,7 +5,7 @@ conf = os.path.join(os.path.expanduser('~'), '.gif_maker')
 # os.system(f'touch {conf}')
 
 def check_config():
-    print(os.path.isfile(conf))
+    # print(os.path.isfile(conf))
     print('[bold yellow]Config does not exist![/bold yellow]')
 
 

@@ -12,10 +12,12 @@ from config import check_config
 
 parser = argparse.ArgumentParser(description="Resizes and creates gif out of png files in specified directory"
     ,epilog="And then there was gif..."
+    ,prog='Gif Maker'
 )    
 parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_false', required=False)
 parser.add_argument('-d', '--directory', help="directory where files are located.", required=False)
 parser.add_argument('-L', '--leave', help='leave processed files, default app removes all files except gif output.', action='store_false')
+parser.add_argument('--version', action='version', version='%(prog)s 0.2')
 args=parser.parse_args()
 
 CLEAN = args.leave
@@ -68,12 +70,12 @@ def main():
     # TODO flag to scale down
     # TODO flag to specify scale down size
     if not args.config:
-        # check_config()
-        # TODO check if config exists and use it.
-        pass        
+        check_config()
+        # parser.print_help()
+        return    
     
     if not args.directory:
-        print('[bold red]Please enter a path to image files.[/bold red]')
+        print('[bold red]Please enter a path to image files with -d flag.[/bold red]')
         return
     fp_in = args.directory
     file_filter_to_resize = 'vlcsnap*.png'
