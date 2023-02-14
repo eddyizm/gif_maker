@@ -1,16 +1,27 @@
 import os
+import configparser
 from rich import print
+from rich.prompt import Confirm, Prompt
 
 conf = os.path.join(os.path.expanduser('~'), '.gif_maker')
 # os.system(f'touch {conf}')
+config = configparser.ConfigParser()
+
+def read_config(conf):
+    config.read(conf)
+    print(f'[bold yellow]value: {config}\n[bold yellow]')
+
 
 def check_config():
-    # print(os.path.isfile(conf))
+    if os.path.isfile(conf):
+        read_config(conf)
     print('[bold yellow]Config does not exist![/bold yellow]')
+    create = Confirm.ask('[yellow]Do you want to create one?[yellow]')
+    create_config() if create else print('Have it your way boss.')
 
 
 def create_config():
-    pass
+    print("[yellow]Let's create a config[yellow]")
 
 
 def edit_config():
