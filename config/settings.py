@@ -15,8 +15,7 @@ def read_config(conf):
 def check_config():
     if os.path.isfile(conf):
         read_config(conf)
-    print('[bold yellow]Config does not exist![/bold yellow]')
-    create = Confirm.ask('[yellow]Do you want to create one?[yellow]')
+    create = Confirm.ask('[yellow]Config does not exist. Do you want to create one?[yellow]')
     create_config() if create else print('Have it your way boss.')
 
 
