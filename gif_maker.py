@@ -16,6 +16,8 @@ parser = argparse.ArgumentParser(description="Resizes and creates gif out of png
 )    
 parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_false', required=False)
 parser.add_argument('-d', '--directory', help="directory where files are located.", required=False)
+parser.add_argument('-p', '--prefix', help="prefix to filter files.", required=False)
+parser.add_argument('-e', '--extension', help="file extenstion to filter by.", required=False)
 parser.add_argument('-L', '--leave', help='leave processed files, default app removes all files except gif output.', action='store_false')
 parser.add_argument('--version', action='version', version='%(prog)s 0.2')
 args=parser.parse_args()
