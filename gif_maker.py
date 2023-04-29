@@ -14,11 +14,11 @@ parser = argparse.ArgumentParser(description="Resizes and creates gif out of png
     ,epilog="And then there was gif..."
     ,prog='Gif Maker'
 )    
-parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_false', required=False)
+parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_true', required=False)
 parser.add_argument('-d', '--directory', help="directory where files are located.", required=False)
 parser.add_argument('-p', '--prefix', help="prefix to filter files.", required=False)
 parser.add_argument('-e', '--extension', help="file extenstion to filter by.", required=False)
-parser.add_argument('-L', '--leave', help='leave processed files, default app removes all files except gif output.', action='store_false')
+parser.add_argument('-L', '--leave', help='leave original and processed files, default app removes all files except gif output.', action='store_false')
 parser.add_argument('--version', action='version', version='%(prog)s 0.2')
 args=parser.parse_args()
 
@@ -39,13 +39,17 @@ def scale_image(input_image_path, output_image_path, width=400):
         os.remove(input_image_path)
 
 
-def resize_images(image_path, glob_regex):
-    print('Resizing images...')
+def resize_images(image_path, glob_regex) -> int:
+    file_count = 0
+    print(f'Resizing images in directory: {image_path}')
     search = os.path.join(image_path, glob_regex)
     for image in track(glob.glob(search)):
         out = image + '.resized.png'
-        scale_image(image, out)
-    print('resizing done')
+        export_folder = os.path.join(image_path, out)
+        scale_image(image, export_folder)
+        file_count += 1
+    print(f'resized {file_count} images')
+    return file_count
 
 
 def clean_up(search):
@@ -68,10 +72,18 @@ def make_gif(image_path, glob_regex,  gif_name = None):
     clean_up(search)
 
 
+def generate_filter(args):
+    if (args.prefix and args.extension):
+        return f'{args.prefix}*.{args.extension}'  
+    if (args.prefix or args.extension):
+        return f'{args.prefix}*' if args.prefix else f'*.{args.extension}'
+    return 'vlcsnap*.png' # TODO default will be set in config 
+
+
 def main():
     # TODO flag to scale down
     # TODO flag to specify scale down size
-    if not args.config:
+    if args.config:
         check_config()
         # parser.print_help()
         return    
@@ -80,11 +92,14 @@ def main():
         print('[bold red]Please enter a path to image files with -d flag.[/bold red]')
         return
     fp_in = args.directory
-    file_filter_to_resize = 'vlcsnap*.png'
-    print(f'[yellow]{file_filter_to_resize[0:-4]}[/yellow]')
-    resize_images(fp_in, file_filter_to_resize)
-    resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
-    make_gif(fp_in, resized_files)
+    file_filter_to_resize = generate_filter(args)
+    print(f'file filter: [yellow]{file_filter_to_resize}[/yellow]')
+    count = resize_images(fp_in, file_filter_to_resize)
+    if count >= 1:
+        resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
+        make_gif(fp_in, resized_files)
+    else:
+        print('[yellow]No files found. Check file path/filters and ry again bob[/yellow]')
 
 
 if __name__ == "__main__":
