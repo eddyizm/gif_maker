@@ -99,7 +99,7 @@ def main():
         resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
         make_gif(fp_in, resized_files)
     else:
-        print('[yellow]No files found. Check file path/filters and ry again bob[/yellow]')
+        print('[yellow]No files found. Check file path/filters and try again bob[/yellow]')
 
 
 if __name__ == "__main__":
