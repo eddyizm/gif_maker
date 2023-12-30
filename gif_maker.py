@@ -10,10 +10,11 @@ from rich.console import Console
 from config import check_config
 
 
-parser = argparse.ArgumentParser(description="Resizes and creates gif out of png files in specified directory"
-    ,epilog="And then there was gif..."
-    ,prog='Gif Maker'
-)    
+parser = argparse.ArgumentParser(
+    description="Resizes and creates gif out of png files in specified directory",
+    epilog="And then there was gif...",
+    prog='Gif Maker'
+)
 parser.add_argument('-c', '--config', help="pass in -c or --config to use a config.", action='store_true', required=False)
 parser.add_argument('-d', '--directory', help="directory where files are located.", required=False)
 parser.add_argument('-p', '--prefix', help="prefix to filter files.", required=False)
@@ -21,7 +22,7 @@ parser.add_argument('-s', '--scale', help="width value to scale final output, de
 parser.add_argument('-e', '--extension', help="file extenstion to filter by.", required=False)
 parser.add_argument('-L', '--leave', help='leave original and processed files, default app removes all files except gif output.', action='store_false')
 parser.add_argument('--version', action='version', version='%(prog)s 0.2')
-args=parser.parse_args()
+args = parser.parse_args()
 
 CLEAN = args.leave
 
@@ -85,8 +86,8 @@ def main():
     if args.config:
         check_config()
         # parser.print_help()
-        return    
-    
+        return
+
     if not args.directory:
         print('[bold red]Please enter a path to image files with -d flag.[/bold red]')
         return
