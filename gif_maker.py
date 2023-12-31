@@ -41,6 +41,10 @@ def scale_image(input_image_path, output_image_path, width):
         os.remove(input_image_path)
 
 
+def remove_quotes(image_path):
+    return image_path.replace('"', '').replace("'","")
+
+
 def resize_images(image_path, glob_regex, width) -> int:
     file_count = 0
     print(f'Resizing images in directory: {image_path}')
@@ -60,7 +64,7 @@ def clean_up(search):
             os.remove(image)
 
 
-def make_gif(image_path, glob_regex,  gif_name = None):
+def make_gif(image_path, glob_regex, gif_name=None):
     gif_name = gif_name or f'{datetime.now().strftime("%Y%m%d%H%M")}_gif_maker.gif'
     search = os.path.join(image_path, glob_regex)
     outfile = os.path.join(image_path, gif_name)
@@ -76,10 +80,10 @@ def make_gif(image_path, glob_regex,  gif_name = None):
 
 def generate_filter(args):
     if (args.prefix and args.extension):
-        return f'{args.prefix}*.{args.extension}'  
+        return f'{args.prefix}*.{args.extension}'
     if (args.prefix or args.extension):
         return f'{args.prefix}*' if args.prefix else f'*.{args.extension}'
-    return 'vlcsnap*.png' # TODO default will be set in config 
+    return 'vlcsnap*.png'  # TODO default will be set in config
 
 
 def main():
@@ -92,12 +96,13 @@ def main():
         print('[bold red]Please enter a path to image files with -d flag.[/bold red]')
         return
     fp_in = args.directory
+    fp_in = remove_quotes(fp_in)
     arg_width = int(args.scale) if args.scale else 400
     file_filter_to_resize = generate_filter(args)
     print(f'file filter: [yellow]{file_filter_to_resize}[/yellow]')
     count = resize_images(fp_in, file_filter_to_resize, arg_width)
     if count >= 1:
-        resized_files = f'{file_filter_to_resize[0:-4]}.resized.png' 
+        resized_files = f'{file_filter_to_resize[0:-4]}.resized.png'
         make_gif(fp_in, resized_files)
     else:
         print('[yellow]No files found. Check file path/filters and try again bob[/yellow]')
