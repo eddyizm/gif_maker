@@ -64,7 +64,7 @@ def clean_up(search, image_path):
             os.remove(image)
     if CLEAN:
         # TODO clean all files using image path.
-
+        pass
 
 def make_gif(image_path, glob_regex, gif_name=None):
     gif_name = gif_name or f'{datetime.now().strftime("%Y%m%d%H%M")}_gif_maker.gif'
