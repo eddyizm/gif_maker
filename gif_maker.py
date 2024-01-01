@@ -59,17 +59,18 @@ def resize_images(image_path, glob_regex, width) -> int:
 
 def clean_up(search, image_path):
     if LEAVE:
-        print('[bold yellow]removing source image[/bold yellow]')
+        print('[bold yellow]removing resized files[/bold yellow]')
         for image in track(glob.glob(search), description=f'cleaning up files {search}'):
             os.remove(image)
     if CLEAN:
         # TODO clean all files using image path.
         pass
 
-def make_gif(image_path, glob_regex, gif_name=None):
+
+def make_gif(image_path, glob_regex, output_path, gif_name=None):
     gif_name = gif_name or f'{datetime.now().strftime("%Y%m%d%H%M")}_gif_maker.gif'
     search = os.path.join(image_path, glob_regex)
-    outfile = os.path.join(image_path, gif_name)
+    outfile = os.path.join(output_path, gif_name) if output_path else os.path.join(image_path, gif_name)
     console = Console()
     with console.status("[bold green]generating the gif... ") as status:
         frames = [Image.open(image) for image in glob.glob(search)]
@@ -104,13 +105,14 @@ def main():
         return
     fp_in = args.directory
     fp_in = remove_quotes(fp_in)
+    output_path = args.output if args.output else None
     arg_width = int(args.scale) if args.scale else 400
     file_filter_to_resize = generate_filter(args)
     print(f'file filter: [yellow]{file_filter_to_resize}[/yellow]')
     count = resize_images(fp_in, file_filter_to_resize, arg_width)
     if count >= 1:
         resized_files = f'{file_filter_to_resize[0:-4]}.resized.png'
-        make_gif(fp_in, resized_files)
+        make_gif(fp_in, resized_files, output_path=output_path)
     else:
         print('[yellow]No files found. Check file path/filters and try again bob[/yellow]')
 
