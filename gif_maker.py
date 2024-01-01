@@ -20,29 +20,28 @@ parser.add_argument('-d', '--directory', help="directory where files are located
 parser.add_argument('-p', '--prefix', help="prefix to filter files.", required=False)
 parser.add_argument('-s', '--scale', help="width value to scale final output, defaults to 400", required=False)
 parser.add_argument('-e', '--extension', help="file extenstion to filter by.", required=False)
+parser.add_argument('--clean', help='clean up resized images, default', action='store_true')
 parser.add_argument('-L', '--leave', help='leave original and processed files, default app removes all files except gif output.', action='store_false')
+parser.add_argument('-o', '--output', help="directory to output gif.", required=False)
 parser.add_argument('--version', action='version', version='%(prog)s 0.2')
 args = parser.parse_args()
 
-CLEAN = args.leave
-
+LEAVE = args.leave
+CLEAN = args.clean
 
 def scale_image(input_image_path, output_image_path, width):
     """
-        resize images before making gif. 
+        resize images before making gif.
     """
     original_image = Image.open(input_image_path)
     w, h = original_image.size
     max_size = (width, h)
     original_image.thumbnail(max_size, Image.Resampling.LANCZOS)
     original_image.save(output_image_path)
-    if CLEAN:
-        print('[bold yellow]removing source image[/bold yellow]')
-        os.remove(input_image_path)
 
 
 def remove_quotes(image_path):
-    return image_path.replace('"', '').replace("'","")
+    return image_path.replace('"', '').replace("'", "")
 
 
 def resize_images(image_path, glob_regex, width) -> int:
@@ -58,10 +57,13 @@ def resize_images(image_path, glob_regex, width) -> int:
     return file_count
 
 
-def clean_up(search):
-    if CLEAN:
+def clean_up(search, image_path):
+    if LEAVE:
+        print('[bold yellow]removing source image[/bold yellow]')
         for image in track(glob.glob(search), description=f'cleaning up files {search}'):
             os.remove(image)
+    if CLEAN:
+        # TODO clean all files using image path.
 
 
 def make_gif(image_path, glob_regex, gif_name=None):
@@ -72,10 +74,15 @@ def make_gif(image_path, glob_regex, gif_name=None):
     with console.status("[bold green]generating the gif... ") as status:
         frames = [Image.open(image) for image in glob.glob(search)]
         frame_one = frames[0]
-        frame_one.save(outfile, format="GIF", append_images=frames,
-                save_all=True, duration=100, loop=0)
+        frame_one.save(
+            outfile, format="GIF",
+            append_images=frames,
+            save_all=True,
+            duration=100,
+            loop=0
+        )
         print(f'gif created: {gif_name}')
-    clean_up(search)
+    clean_up(search, image_path)
 
 
 def generate_filter(args):

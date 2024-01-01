@@ -15,8 +15,8 @@ pip install -r requirements.txt
 # Usage  
 
 ```  
-$ py gif_maker.py -h
-usage: gif_maker.py [-h] [-c] [-d DIRECTORY] [-L]
+$ python gif_maker.py --help
+usage: Gif Maker [-h] [-c] [-d DIRECTORY] [-p PREFIX] [-s SCALE] [-e EXTENSION] [--clean] [-L] [-o OUTPUT] [--version]
 
 Resizes and creates gif out of png files in specified directory
 
@@ -25,9 +25,19 @@ options:
   -c, --config          pass in -c or --config to use a config.
   -d DIRECTORY, --directory DIRECTORY
                         directory where files are located.
-  -L, --leave           leave processed files, default app removes all files except gif output.
+  -p PREFIX, --prefix PREFIX
+                        prefix to filter files.
+  -s SCALE, --scale SCALE
+                        width value to scale final output, defaults to 400
+  -e EXTENSION, --extension EXTENSION
+                        file extenstion to filter by.
+  --clean               clean up resized images, default
+  -L, --leave           leave original and processed files, default app removes all files except gif output.
+  -o OUTPUT, --output OUTPUT
+                        directory to output gif.
+  --version             show program's version number and exit
 
-And then there was gif...   
+And then there was gif...
 ```
 
 Current state needs the directory flag and path. 
